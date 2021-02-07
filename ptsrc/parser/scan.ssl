@@ -20,13 +20,16 @@ Input :
         lPlus           '+'
         lMinus          '-'
         lStar           '*'
+        lPercent        '%'
         lColon          ':'
         lEquals         '='
         lDot            '.'
         lComma          ','
         lSemicolon      ';'
-        lQuote
-        lBackslash
+        lBang           '!'
+        lQuote          '"'
+        lBackslash      '\'
+        lSlash          '/'
         lLeftAngle      '<'
         lRightAngle     '>'
         lLeftParen      '('
@@ -35,6 +38,8 @@ Input :
         lRightBracket   ']'
         lLeftBrace      '{'
         lRightBrace     '}'
+        lHash           '#'
+        lOrBar            '|'
         lBlank
         lIllegal
         lNewLine
@@ -48,32 +53,31 @@ Output :
         % Keyword tokens -
         %   Tokens pDiv through pRepeat are keywords which will be 
         %   separated from user defined identifiers by the Screener.
-        %   This Scanner treats them all as identifiers.
-        pDiv 
-        firstKeywordToken = pDiv
-        pMod
+        %   This Scanner treats them all as identifiers. 
         pOr
+        firstKeywordToken = pOr
         pAnd
         pNot
         pThen
         pElse
         pOf
         pEnd
-        pUntil
-        pDo
-        pArray
         pFile
-        pProgram
-        pConst
         pVar
-        pType
-        pProcedure
-        pBegin
         pIf
-        pCase
         pWhile
         pRepeat
-        lastKeywordToken = pRepeat
+        pChoose
+        pElseif
+        pFun
+        pIs
+        pLike
+        pPkg
+        PPublic
+        pUsing
+        pVal
+        pWhen
+        lastKeywordToken = pWhen
 
         % Scanner tokens -
         %   These are the tokens actually recognized by the Scanner itself.
@@ -109,7 +113,18 @@ Output :
         pLeftBracket
         pRightBracket
         pDotDot
-        lastSyntaxToken = pDotDot;
+        pSlash
+        pPercent
+        pHash
+        pOrBar
+        pDoubleOrBar
+        pPlusEquals
+        pMinusEquals
+        pStarEquals
+        pSlashEquals
+        pPercentEquals
+        pDoubleEquals
+        lastSyntaxToken = pDoubleEquals;
 
 Error :
         eIllegalChar = 5
@@ -147,18 +162,15 @@ Scan :
             | ';':
                 .pSemicolon
             | '(':
-                [
-                    | '*':
-                        @AlternateComment
-                    | *:
-                        .pLeftParen
-                ]
+                .pLeftParen
             | ')':
                 .pRightParen
             | '[':
                 .pLeftBracket
             | ']':
                 .pRightBracket
+            | '#':
+                .pHash
             | ',':
                 .pComma
             | ':':
@@ -182,10 +194,33 @@ Scan :
                 .pEquals
             | '+':
                 .pPlus
+            | '%':
+                .pPercent
             | lQuote:
                 @StringLiteral
             | '-':
                 .pMinus
+            | '/':
+                [
+                    | '/':
+                        @Comment
+                    | '*':
+                        @AlternateComment
+                    | *:
+                        .pSlash
+                ]
+            | '+=':
+                .pPlusEquals
+            | '-=':
+                .pMinusEquals
+            | '*=':
+                .pStarEquals
+            | '/=':
+                .pSlashEquals
+            | '%=':
+                .pPercentEquals
+            | '==':
+                .pDoubleEquals
             | '.':
                 [
                     | '.':
@@ -209,8 +244,10 @@ Scan :
                     | *:
                         .pGreater
                 ]
-            | '{':
-                @Comment
+            | '|':
+                .pOrBar
+            | '||':
+                .pDoubleOrBar
             | '*':
                 .pStar
             | lNewPage:
@@ -278,10 +315,9 @@ Comment :
         % Discard the contents of a comment
 
         {[
-            | '}':
-                >
             | lNewLine:
                 .pNewLine
+                >
             | lEndFile:         % comment must be closed before EOF
                 #eCommentEOF
                 .pEndFile
@@ -294,7 +330,7 @@ AlternateComment :
         {[
             | '*':
                 [
-                    | ')':
+                    | '/':
                         >
                     | *:
                 ]
