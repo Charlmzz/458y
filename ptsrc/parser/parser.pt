@@ -125,39 +125,39 @@ program ScannerParser(output, stdIdentifiers, scanSsl, parseSsl, source, parseSt
         pInteger = 23;
         pStringLiteral = 24;
         lastCompoundInputToken = 24;
-        pNewLine = 26;
-        pEndFile = 27;
-        pPlus = 28;
-        pMinus = 29;
-        pStar = 30;
-        pColonEquals = 31;
-        pDot = 32;
-        pComma = 33;
-        pSemicolon = 34;
-        pColon = 35;
-        pEquals = 36;
-        pNotEqual = 37;
-        pLess = 38;
-        pLessEqual = 39;
-        pGreaterEqual = 40;
-        pGreater = 41;
-        pLeftParen = 42;
-        pRightParen = 43;
-        pLeftBracket = 44;
-        pRightBracket = 45;
-        pDotDot = 46;
-        pSlash = 47;
-        pPercent = 48;
-        pHash = 49;
-        pOrBar = 50;
-        pDoubleOrBar = 51;
-        pPlusEquals = 52;
-        pMinusEquals = 53;
-        pStarEquals = 54;
-        pSlashEquals = 55;
-        pPercentEquals = 56;
-        pDoubleEquals = 57;
-        lastSyntaxToken = 57;
+        pNewLine = 25;
+        pEndFile = 26;
+        pPlus = 27;
+        pMinus = 28;
+        pStar = 29;
+        pColonEquals = 30;
+        pDot = 31;
+        pComma = 32;
+        pSemicolon = 33;
+        pColon = 34;
+        pEquals = 35;
+        pNotEqual = 36;
+        pLess = 37;
+        pLessEqual = 38;
+        pGreaterEqual = 39;
+        pGreater = 40;
+        pLeftParen = 41;
+        pRightParen = 42;
+        pLeftBracket = 43;
+        pRightBracket = 44;
+        pDotDot = 45;
+        pSlash = 46;
+        pPercent = 47;
+        pHash = 48;
+        pOrBar = 49;
+        pDoubleOrBar = 50;
+        pPlusEquals = 51;
+        pMinusEquals = 52;
+        pStarEquals = 53;
+        pSlashEquals = 54;
+        pPercentEquals = 55;
+        pDoubleEquals = 56;
+        lastSyntaxToken = 56;
 
         { Input/Output Tokens }
 
@@ -174,17 +174,18 @@ program ScannerParser(output, stdIdentifiers, scanSsl, parseSsl, source, parseSt
 
         { S/SL Rule Table Addresses } {
         Scan = 0;
-        Identifier = 212;
-        AlternateComment = 325;
-        Integer = 229;
-        StringLiteral = 244;
-        Comment = 296;
+        Identifier = 296;
+        Integer = 313;
+        StringLiteral = 328;
+        Comment = 380;
+        AlternateComment = 405;
         }
 
         { S/SL Table Parameters }
-        sslTblSize = 361;
+        sslTblSize = 441;
         minSslTableValue = -32767;
         maxSslTableValue = 32767;
+
 
 { ===== End of contents of scan.def }
 
