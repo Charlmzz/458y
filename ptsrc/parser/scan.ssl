@@ -39,7 +39,7 @@ Input :
         lLeftBrace      '{'
         lRightBrace     '}'
         lHash           '#'
-        lOrBar            '|'
+        lOrBar          '|'
         lBlank
         lIllegal
         lNewLine
@@ -191,36 +191,46 @@ Scan :
                     | *:
                 ]
             | '=':
-                .pEquals
+                [
+                    | '=':
+                        .pDoubleEquals
+                    | *:
+                        .pEquals
+                ]
             | '+':
-                .pPlus
+                [
+                    | '=':
+                        .pPlusEquals
+                    | *:
+                        .pPlus
+                ]
             | '%':
-                .pPercent
+                [
+                    | '=':
+                        .pPercentEquals
+                    | *:
+                        .pPercent
+                ]
             | lQuote:
                 @StringLiteral
             | '-':
-                .pMinus
+                [
+                    | '=':
+                        .pMinusEquals
+                    | *:
+                        .pMinus
+                ]
             | '/':
                 [
                     | '/':
                         @Comment
                     | '*':
                         @AlternateComment
+                    | '=':
+                        .pSlashEquals
                     | *:
                         .pSlash
                 ]
-            | '+=':
-                .pPlusEquals
-            | '-=':
-                .pMinusEquals
-            | '*=':
-                .pStarEquals
-            | '/=':
-                .pSlashEquals
-            | '%=':
-                .pPercentEquals
-            | '==':
-                .pDoubleEquals
             | '.':
                 [
                     | '.':
@@ -245,11 +255,19 @@ Scan :
                         .pGreater
                 ]
             | '|':
-                .pOrBar
-            | '||':
-                .pDoubleOrBar
+                [
+                    | '|':
+                        .pDoubleOrBar
+                    | *:
+                        .pOrBar
+                ]
             | '*':
-                .pStar
+                [
+                    | '=':
+                        .pStarEquals
+                    | *:    
+                        .pStar
+                ]
             | lNewPage:
             | lEndFile:
                 .pEndFile
