@@ -115,7 +115,7 @@ program ScannerParser(output, stdIdentifiers, scanSsl, parseSsl, source, parseSt
         pIs = 15;
         pLike = 16;
         pPkg = 17;
-        PPublic = 18;
+        pPublic = 18;
         pUsing = 19;
         pVal = 20;
         pWhen = 21;
