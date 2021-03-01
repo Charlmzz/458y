@@ -16,32 +16,32 @@
 Input :
         % Keywords must be first both here and in stdIdentifiers,
         % and they must appear in the exact same order
+        % TODO: add comment
 
-        pDiv                    'div'
-        firstKeywordToken = pDiv
-        pMod                    'mod'
         pOr                     'or'
+        firstKeywordToken = pOr
         pAnd                    'and'
         pNot                    'not'
         pThen                   'then'
         pElse                   'else'
         pOf                     'of'
         pEnd                    'end'
-        pUntil                  'until'
-        pDo                     'do'
-        pArray                  'array'
         pFile                   'file'
-        pProgram                'program'
-        pConst                  'const'
         pVar                    'var'
-        pType                   'type'
-        pProcedure              'procedure'
-        pBegin                  'begin'
         pIf                     'if'
-        pCase                   'case'
         pWhile                  'while'
         pRepeat                 'repeat'
-        lastKeywordToken = pRepeat 
+        pChoose                 'Choose'
+        pElseif                 'elseif'
+        pFun                    'fun'
+        pIs                     'is'
+        pLike                   'like'
+        pPkg                    'pkg'
+        pPublic                 'public'
+        pUsing                  'using'
+        pVal                    'val'
+        pWhen                   'when'
+        lastKeywordToken = pWhen        
 
         % Scanner tokens -
         %   These are the tokens actually recognized by the Scanner itself.
@@ -56,18 +56,18 @@ Input :
 
         % Non-compound tokens - 
         %   These tokens simply represent themselves.
+        % TODO: add comment
         pNewLine
         pEndFile
         pPlus                   '+'
         pMinus                  '-'
         pStar                   '*'
-        pColonEquals            ':='
         pDot                    '.'
         pComma                  ','
         pSemicolon              ';'
         pColon                  ':'
         pEquals                 '='
-        pNotEqual               '<>'
+        pNotEqual               '!='
         pLess                   '<'
         pLessEqual              '<='
         pGreaterEqual           '>='
@@ -76,9 +76,21 @@ Input :
         pRightParen             ')'
         pLeftBracket            '['
         pRightBracket           ']'
-        pDotDot                 '..'
-        lastSyntaxToken = pDotDot;
+        pSlash                  '/'
+        pBang                   '!' 
+        pPercent                '%'
+        pHash                   '#'
+        pOrBar                  '|'
+        pDoubleOrBar            '||'
+        pPlusEquals             '+='
+        pMinusEquals            '-='
+        pStarEquals             '*='
+        pSlashEquals            '/='
+        pPercentEquals          '%='
+        pDoubleEquals           '=='
+        lastSyntaxToken = pDoubleEquals;
 
+% TODO: add comment
 Output :
         sIdentifier 
         firstSemanticToken = sIdentifier
@@ -91,7 +103,15 @@ Output :
         sParmBegin
         sParmEnd
         sConst
-        sType
+        sLike
+        sPackage
+        sPublic
+        sConcatenate
+        sRepeatString
+        sSubstring
+        sLength
+        sInitialValue
+        sCaseElse
         sVar
         sProcedure
         sBegin
