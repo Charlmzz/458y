@@ -97,7 +97,6 @@ Output :
         pPlus
         pMinus
         pStar
-        pColonEquals
         pDot
         pComma
         pSemicolon
@@ -112,8 +111,8 @@ Output :
         pRightParen
         pLeftBracket
         pRightBracket
-        pDotDot
         pSlash
+        pBang
         pPercent
         pHash
         pOrBar
@@ -174,12 +173,7 @@ Scan :
             | ',':
                 .pComma
             | ':':
-                [
-                    | '=':
-                        .pColonEquals
-                    | *:
-                        .pColon
-                ]
+                .pColon
             | lDigit:
                 oBufferSave
                 @Integer
@@ -220,6 +214,13 @@ Scan :
                     | *:
                         .pMinus
                 ]
+            | '!':
+                [
+                    | '=':
+                        .pNotEqual
+                    | *:
+                        .pBang
+                ]
             | '/':
                 [
                     | '/':
@@ -232,16 +233,9 @@ Scan :
                         .pSlash
                 ]
             | '.':
-                [
-                    | '.':
-                        .pDotDot
-                    | *:
-                        .pDot
-                ]
+                .pDot
             | '<':
                 [
-                    | '>':
-                        .pNotEqual
                     | '=':
                         .pLessEqual
                     | *:
