@@ -72,34 +72,33 @@
         pPlus = 27;
         pMinus = 28;
         pStar = 29;
-        pColonEquals = 30;
-        pDot = 31;
-        pComma = 32;
-        pSemicolon = 33;
-        pColon = 34;
-        pEquals = 35;
-        pNotEqual = 36;
-        pLess = 37;
-        pLessEqual = 38;
-        pGreaterEqual = 39;
-        pGreater = 40;
-        pLeftParen = 41;
-        pRightParen = 42;
-        pLeftBracket = 43;
-        pRightBracket = 44;
-        pDotDot = 45;
-        pSlash = 46;
-        pPercent = 47;
-        pHash = 48;
-        pOrBar = 49;
-        pDoubleOrBar = 50;
-        pPlusEquals = 51;
-        pMinusEquals = 52;
-        pStarEquals = 53;
-        pSlashEquals = 54;
-        pPercentEquals = 55;
-        pDoubleEquals = 56;
-        lastSyntaxToken = 56;
+        pDot = 30;
+        pComma = 31;
+        pSemicolon = 32;
+        pColon = 33;
+        pEquals = 34;
+        pNotEqual = 35;
+        pLess = 36;
+        pLessEqual = 37;
+        pGreaterEqual = 38;
+        pGreater = 39;
+        pLeftParen = 40;
+        pRightParen = 41;
+        pLeftBracket = 42;
+        pRightBracket = 43;
+        pSlash = 44;
+        pBang = 45;
+        pPercent = 46;
+        pHash = 47;
+        pOrBar = 48;
+        pDoubleOrBar = 49;
+        pPlusEquals = 50;
+        pMinusEquals = 51;
+        pStarEquals = 52;
+        pSlashEquals = 53;
+        pPercentEquals = 54;
+        pDoubleEquals = 55;
+        lastSyntaxToken = 55;
 
         { Input/Output Tokens }
 
@@ -116,14 +115,14 @@
 
         { S/SL Rule Table Addresses } {
         Scan = 0;
-        Identifier = 296;
-        Integer = 313;
-        StringLiteral = 328;
-        Comment = 380;
-        AlternateComment = 405;
+        Identifier = 287;
+        Integer = 304;
+        StringLiteral = 319;
+        Comment = 371;
+        AlternateComment = 394;
         }
 
         { S/SL Table Parameters }
-        sslTblSize = 441;
+        sslTblSize = 430;
         minSslTableValue = -32767;
         maxSslTableValue = 32767;
