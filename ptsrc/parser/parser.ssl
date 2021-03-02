@@ -102,7 +102,6 @@ Output :
         sProgram
         sParmBegin
         sParmEnd
-        sConst
         sLike
         sPackage
         sPublic
@@ -113,6 +112,7 @@ Output :
         sInitialValue
         sCaseElse
         sVar
+        sVal
         sProcedure
         sBegin
         sEnd
@@ -181,15 +181,28 @@ Block :
         % appear only in the order consts, types, vars, procedures.
         % We allow arbitrary intermixing of these instead to preserve
         % programmer sanity.
+        .sBegin
         {[
-            | 'const':
-                .sConst
+            | 'public':
+                [
+                    | 'val':
+                        .sVal
+                        pIdentifier  .sIdentifier
+                        .sPublic
+                        @ConstantDefinitions
+                    | 'var':
+                        .sVar
+                        pIdentifier  .sIdentifier
+                        .sPublic
+                        @VariableDeclarations
+                ]
+            | 'val':
+                .sVal
+                pIdentifier  .sIdentifier
                 @ConstantDefinitions
-            | 'type':
-                .sType
-                @TypeDefinitions
             | 'var':
                 .sVar
+                pIdentifier  .sIdentifier
                 @VariableDeclarations
             | 'procedure':
                 .sProcedure
@@ -197,30 +210,41 @@ Block :
                 pIdentifier  .sIdentifier
                 @ProcedureHeading
                 @Block  ';'
-            | *:
+            | pIdentifier:
+                @AssignmentOrCallStmt
+            | 'if':
+                @IfStmt
+            | 'while':
+                @WhileStmt
+            | 'choose':
+                @CaseStmt
+            | 'repeat':
+                @RepeatStmt
+            | ';':
+            | 'end':
+                .sEnd
                 >
-        ]}
-        'begin'
-        @BeginStmt;
+            | *:
+                .sNullStmt
+                >
+        ]};
+
 
 ConstantDefinitions :
         % Accept one or more named constant definitions
-        pIdentifier  .sIdentifier
-        '=' @ConstantValue ';'
+        '=' @ConstantValue % e.g. var a=1, b=2;
         {[
-            | pIdentifier:
-                .sIdentifier
-                '=' @ConstantValue ';'
-            | *:
+            | ';':
                 >
+            | *：
+                ',' pIdentifier .sIdentifier
+                '=' @ConstantValue
         ]};
 
 ConstantValue :
         [
             | pInteger:
                 .sInteger
-            | pIdentifier:
-                .sIdentifier
             | '-':
                 @UnsignedIntegerConstant
                 .sNegate
@@ -238,47 +262,41 @@ UnsignedIntegerConstant :
                 .sInteger
         ];
 
-TypeDefinitions :
-        % Accept one or more named type definitions.
-        pIdentifier  .sIdentifier
-        '='  @TypeBody  ';'
-        {[
-            | pIdentifier:
-                .sIdentifier
-                '='  @TypeBody  ';'
+ValueOrLike :
+      [
+            | '=':
+                .sInitialValue
+                @Expression
+                .sExpnEnd
+            | ':':
+                [
+                    | 'file':
+                        .sFile 'like' .sLike @VariableOrConstant
+                    | *:
+                        'like' .sLike @VariableOrConstant
+                ]
+            | '[':
+                @LikeClause
+                [
+                    | 'file':
+                        .sFile 'like' .sLike @VariableOrConstant
+                    | *:
+                        'like' .sLike @VariableOrConstant
+                ]               
             | *:
-                >
-        ]};
-
-TypeBody :
-        [
-            | 'array':
-                .sArray
-                '['  @SimpleType  ']'
-                'of'  @SimpleType
-            | 'file':
-                .sFile
-                'of'  @SimpleType
-            | *:
-                @SimpleType
         ];
 
-SimpleType :
-        % A simple type is a named type (possibly predefined)
-        % or a subrange type specification
+LikeClause:
+        .sArray
+        @constantValue ']'
+        ;
+
+VariableOrConstant:
         [
             | pIdentifier:
                 .sIdentifier
-                [
-                    | '..':
-                        .sRange         %% this may be unnecessary
-                        @OptionallySignedIntegerConstant
-                    | *:
-                ]
             | *:
-                @OptionallySignedIntegerConstant
-                '..'  .sRange
-                @OptionallySignedIntegerConstant
+                @ConstantValue
         ];
 
 OptionallySignedIntegerConstant :
@@ -293,16 +311,9 @@ OptionallySignedIntegerConstant :
         ];
 
 VariableDeclarations :
-        % Accept one or more variable declarations.
-        pIdentifier  .sIdentifier
-        ':'  @TypeBody  ';'
-        {[
-            | pIdentifier:
-                .sIdentifier
-                ':'  @TypeBody  ';'
-            | *:
-                >
-        ]};
+        % Accept only one declaration.
+        @ValueOrLike  ';'
+;
 
 ProcedureHeading :
         % Accept zero or more procedure formal parameter declarations.
@@ -331,24 +342,6 @@ ProcedureHeading :
         ]
         ';'
         .sParmEnd;
-
-Statement :
-        [
-            | pIdentifier:
-                @AssignmentOrCallStmt
-            | 'begin':
-                @BeginStmt
-            | 'if':
-                @IfStmt
-            | 'while':
-                @WhileStmt
-            | 'case':
-                @CaseStmt
-            | 'repeat':
-                @RepeatStmt
-            | *:
-                .sNullStmt
-        ];
 
 AssignmentOrCallStmt :
         [
@@ -399,28 +392,16 @@ CallStmt :
         ]
         .sParmEnd;
 
-BeginStmt :
-        .sBegin
-        {
-            @Statement
-            [
-                | ';':
-                | 'end':
-                    .sEnd
-                    >
-            ]
-        };
-
 IfStmt :
         .sIfStmt
         @Expression
         .sExpnEnd
         'then'  .sThen
-        @Statement
+        @Block
         [
             | 'else':
                 .sElse
-                @Statement
+                @Block
             | *:
         ];
 
@@ -459,19 +440,19 @@ CaseAlternative :
             ]
         }
         .sLabelEnd
-        ':'  @Statement;
+        ':'  @Block;
 
 WhileStmt :
         .sWhileStmt
         @Expression
         .sExpnEnd
         'do'
-        @Statement;
+        @Block;
 
 RepeatStmt :
         .sRepeatStmt
         {
-            @Statement
+            @Block
             [
                 | ';':
                 | 'until':
