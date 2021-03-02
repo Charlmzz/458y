@@ -214,8 +214,8 @@ Block :
             | 'fun':
                 .sProcedure
                 % procedure name
-                pIdentifier  .sIdentifier 'is'
-                @ProcedureHeading
+                pIdentifier  .sIdentifier
+                @ProcedureHeading 'is'
                 @Block  ';'
             | 'pkg':
                 .sPackage
