@@ -247,7 +247,7 @@ ConstantDefinitions :
         {[
             | ';':
                 >
-            | *：
+            | *:
                 ',' pIdentifier .sIdentifier
                 '=' @ConstantValue
         ]};
@@ -490,7 +490,6 @@ WhileStmt :
         .sWhileStmt
         @Expression
         .sExpnEnd
-        'do'
         @Block;
 
 RepeatStmt :
@@ -500,13 +499,16 @@ RepeatStmt :
             [
                 | ';':
                 | 'while':
+                    @Expression
+                    .sNot
+                    .sExpnEnd
+                    .sRepeatEnd
+                    >
+                | 'end':
                     .sRepeatEnd
                     >
             ]
-        }
-        @Expression
-        .sNot
-        .sExpnEnd;
+        };
 
 Expression :
         @SimpleExpression
