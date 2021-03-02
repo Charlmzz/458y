@@ -159,7 +159,7 @@ Output :
 rules
 
 Program :
-        'program'  .sProgram
+        'using'  .sProgram
         % program name
         pIdentifier
         % program parameters
@@ -195,6 +195,13 @@ Block :
                         pIdentifier  .sIdentifier
                         .sPublic
                         @VariableDeclarations
+                    | 'fun':
+                        .sProcedure
+                        % procedure name
+                        pIdentifier  .sIdentifier 'is'
+                        .sPublic
+                        @ProcedureHeading
+                        @Block  ';'                    
                 ]
             | 'val':
                 .sVal
@@ -204,12 +211,16 @@ Block :
                 .sVar
                 pIdentifier  .sIdentifier
                 @VariableDeclarations
-            | 'procedure':
+            | 'fun':
                 .sProcedure
                 % procedure name
-                pIdentifier  .sIdentifier
+                pIdentifier  .sIdentifier 'is'
                 @ProcedureHeading
                 @Block  ';'
+            | 'pkg':
+                .sPackage
+                pIdentifier  .sIdentifier 'is'
+                @Block ';'
             | pIdentifier:
                 @AssignmentOrCallStmt
             | 'if':
@@ -245,6 +256,8 @@ ConstantValue :
         [
             | pInteger:
                 .sInteger
+            | pIdentifier:
+                .sIdentifier
             | '-':
                 @UnsignedIntegerConstant
                 .sNegate
@@ -263,11 +276,17 @@ UnsignedIntegerConstant :
         ];
 
 ValueOrLike :
-      [
+        [
             | '=':
                 .sInitialValue
                 @Expression
-                .sExpnEnd
+                .sExpnEnd              
+            | *:
+                @LikeClause
+        ];
+
+LikeClause:
+        [
             | ':':
                 [
                     | 'file':
@@ -276,20 +295,15 @@ ValueOrLike :
                         'like' .sLike @VariableOrConstant
                 ]
             | '[':
-                @LikeClause
+                .sArray
+                @constantValue ']'
                 [
                     | 'file':
                         .sFile 'like' .sLike @VariableOrConstant
                     | *:
                         'like' .sLike @VariableOrConstant
-                ]               
-            | *:
+                ]
         ];
-
-LikeClause:
-        .sArray
-        @constantValue ']'
-        ;
 
 VariableOrConstant:
         [
@@ -328,11 +342,9 @@ ProcedureHeading :
                         | *:
                             pIdentifier  .sIdentifier
                     ]
-                    ':'
-                    % type identifier
-                    pIdentifier  .sIdentifier
+                    @LikeClause
                     [
-                        | ';':
+                        | ',':
                         | *:
                             >
                     ]
@@ -345,7 +357,7 @@ ProcedureHeading :
 
 AssignmentOrCallStmt :
         [
-            | ':=':
+            | '=':
                 .sAssignmentStmt
                 .sIdentifier    % identifier accepted in the Statement rule
                 @Expression
@@ -356,8 +368,43 @@ AssignmentOrCallStmt :
                 .sSubscript
                 @Expression
                 .sExpnEnd
-                ']'  ':='
+                ']'  '='
                 @Expression
+                .sExpnEnd
+            | '+=':
+                .sAssignmentStmt
+                .sIdentifier
+                .sIdentifier
+                @ConstantValue
+                .sAdd
+                .sExpnEnd
+            | '-=':
+                .sAssignmentStmt
+                .sIdentifier
+                .sIdentifier
+                @ConstantValue
+                .sSubtract
+                .sExpnEnd
+            | '*=':
+                .sAssignmentStmt
+                .sIdentifier
+                .sIdentifier
+                @ConstantValue
+                .sMultiply
+                .sExpnEnd
+            | '/=':
+                .sAssignmentStmt
+                .sIdentifier
+                .sIdentifier
+                @ConstantValue
+                .sDivide
+                .sExpnEnd
+            | '%=':
+                .sAssignmentStmt
+                .sIdentifier
+                .sIdentifier
+                @ConstantValue
+                .sModulus
                 .sExpnEnd
             | *:
                 @CallStmt
@@ -399,6 +446,9 @@ IfStmt :
         'then'  .sThen
         @Block
         [
+            | 'elseif':
+                .sElse
+                @IfStmt
             | 'else':
                 .sElse
                 @Block
@@ -410,22 +460,16 @@ CaseStmt :
         @Expression
         .sExpnEnd
         'of'
-        @CaseAlternative
         {[
-            | ';':
-                % since case alternatives cannot be null, allow
-                % for the common situation of an extra semicolon
-                % at the end of the list of case alternatives.
-                [
-                    | 'end':
-                        >
-                    | *:
-                        @CaseAlternative
-                ]
+            | 'when':
+                @CaseAlternative
+            | 'else':
+                .sCaseEnd
+                .sCaseElse
+                @Block
             | 'end':
                 >
-        ]}
-        .sCaseEnd;
+        ]};
 
 CaseAlternative :
         % A case alternative is a statement labelled by
@@ -455,20 +499,21 @@ RepeatStmt :
             @Block
             [
                 | ';':
-                | 'until':
+                | 'while':
                     .sRepeatEnd
                     >
             ]
         }
         @Expression
+        .sNot
         .sExpnEnd;
 
 Expression :
         @SimpleExpression
         [
-            | '=':
+            | '==':
                 @SimpleExpression  .sEq
-            | '<>':
+            | '!=':
                 @SimpleExpression  .sNE
             | '<':
                 @SimpleExpression  .sLT
@@ -497,6 +542,10 @@ SimpleExpression :
                 @Term  .sSubtract
             | 'or':
                 .sInfixOr  @Term  .sOr
+            | '|':
+                @Term  .sConcatenate
+            | '||':
+                @Term  .sRepeatString
             | *:
                 >
         ]};
@@ -506,9 +555,16 @@ Term :
         {[
             | '*':
                 @Factor  .sMultiply
-            | 'div':
-                @Factor  .sDivide
-            | 'mod':
+            | '/':
+                @Factor  
+                [
+                    | ':':
+                        pInteger .sInteger
+                        .sSubstring
+                    | *:
+                        .sDivide
+                ]
+            | '%':
                 @Factor  .sModulus
             | 'and':
                 .sInfixAnd  @Factor  .sAnd
@@ -528,6 +584,9 @@ Factor :
             | 'not':
                 @Factor
                 .sNot
+            | '#':
+                pStringLiteral .sStringLiteral
+                .sLength
             | pStringLiteral:
                 .sStringLiteral
             | 'file':
