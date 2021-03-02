@@ -198,9 +198,9 @@ Block :
                     | 'fun':
                         .sProcedure
                         % procedure name
-                        pIdentifier  .sIdentifier 'is'
+                        pIdentifier  .sIdentifier
                         .sPublic
-                        @ProcedureHeading
+                        @ProcedureHeading 'is'
                         @Block  ';'                    
                 ]
             | 'val':
