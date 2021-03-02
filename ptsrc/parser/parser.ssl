@@ -352,7 +352,6 @@ ProcedureHeading :
                 ')'
             | *:
         ]
-        ';'
         .sParmEnd;
 
 AssignmentOrCallStmt :
