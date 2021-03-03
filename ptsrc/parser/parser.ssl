@@ -201,7 +201,7 @@ Block :
                         pIdentifier  .sIdentifier
                         .sPublic
                         @ProcedureHeading 'is'
-                        @Block  ';'                    
+                        @Block                    
                 ]
             | 'val':
                 .sVal
@@ -216,13 +216,16 @@ Block :
                 % procedure name
                 pIdentifier  .sIdentifier
                 @ProcedureHeading 'is'
-                @Block  ';'
+                @Block
             | 'pkg':
                 .sPackage
                 pIdentifier  .sIdentifier 'is'
-                @Block ';'
+                @Block
             | pIdentifier:
                 @AssignmentOrCallStmt
+            | pStringLiteral:
+                .sStringLiteral
+                @Expression
             | 'if':
                 @IfStmt
             | 'while':
@@ -232,6 +235,8 @@ Block :
             | 'repeat':
                 @RepeatStmt
             | ';':
+                .sEnd
+                >
             | 'end':
                 .sEnd
                 >
@@ -326,7 +331,7 @@ OptionallySignedIntegerConstant :
 
 VariableDeclarations :
         % Accept only one declaration.
-        @ValueOrLike  ';'
+        @ValueOrLike
 ;
 
 ProcedureHeading :
@@ -483,7 +488,7 @@ CaseAlternative :
             ]
         }
         .sLabelEnd
-        'then'  @Block ';';
+        'then'  @Block ;
 
 WhileStmt :
         .sWhileStmt
