@@ -483,7 +483,7 @@ CaseAlternative :
             ]
         }
         .sLabelEnd
-        'then'  @Block;
+        'then'  @Block ';';
 
 WhileStmt :
         .sWhileStmt
