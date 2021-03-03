@@ -224,7 +224,6 @@ Block :
             | pIdentifier:
                 @AssignmentOrCallStmt
             | pStringLiteral:
-                .sStringLiteral
                 @Expression
             | 'if':
                 @IfStmt
@@ -502,6 +501,8 @@ RepeatStmt :
             @Block
             [
                 | ';':
+                    .sRepeatEnd
+                    >
                 | 'while':
                     @Expression
                     .sNot
