@@ -163,7 +163,6 @@ Program :
         % program name
         pIdentifier
         % program parameters
-        '('
         {
             pIdentifier  .sIdentifier
             [
@@ -172,9 +171,8 @@ Program :
                     >
             ]
         }
-        ')'
         .sParmEnd
-        ';'  @Block  '.';
+        ';'  @Block  ;
 
 Block :
         % Strictly speaking, standard Pascal requires that declarations
@@ -187,29 +185,24 @@ Block :
                 [
                     | 'val':
                         .sVal
-                        pIdentifier  .sIdentifier
                         .sPublic
                         @ConstantDefinitions
                     | 'var':
                         .sVar
-                        pIdentifier  .sIdentifier
                         .sPublic
                         @VariableDeclarations
                     | 'fun':
                         .sProcedure
-                        % procedure name
-                        pIdentifier  .sIdentifier
                         .sPublic
                         @ProcedureHeading 'is'
-                        @Block                    
+                        @Block      
+						'end' ';'
                 ]
             | 'val':
                 .sVal
-                pIdentifier  .sIdentifier
                 @ConstantDefinitions
             | 'var':
                 .sVar
-                pIdentifier  .sIdentifier
                 @VariableDeclarations
             | 'fun':
                 .sProcedure
@@ -217,10 +210,12 @@ Block :
                 pIdentifier  .sIdentifier
                 @ProcedureHeading 'is'
                 @Block
+				'end' ';'
             | 'pkg':
                 .sPackage
                 pIdentifier  .sIdentifier 'is'
                 @Block
+				'end' ';'
             | pIdentifier:
                 @AssignmentOrCallStmt
             | pStringLiteral:
@@ -232,21 +227,24 @@ Block :
             | 'choose':
                 @CaseStmt
             | 'repeat':
-                @RepeatStmt
+				[
+					| 'while':
+						@WhileStmt
+					| *:
+						@RepeatStmt
+				]
             | ';':
-                .sEnd
-                >
-            | 'end':
-                .sEnd
+                .sNullStmt
                 >
             | *:
-                .sEnd
                 >
-        ]};
+        ]}
+		.sEnd;
 
 
 ConstantDefinitions :
         % Accept one or more named constant definitions
+		pIdentifier  .sIdentifier
         '=' @ConstantValue % e.g. var a=1, b=2;
         {[
             | ';':
@@ -300,7 +298,7 @@ LikeClause:
                 ]
             | '[':
                 .sArray
-                @constantValue ']'
+                @constantValue ']' ':'
                 [
                     | 'file':
                         .sFile 'like' .sLike @VariableOrConstant
@@ -378,40 +376,40 @@ AssignmentOrCallStmt :
                 .sAssignmentStmt
                 .sIdentifier
                 .sIdentifier
-                @ConstantValue
+                @Expression
                 .sAdd
                 .sExpnEnd
             | '-=':
                 .sAssignmentStmt
                 .sIdentifier
                 .sIdentifier
-                @ConstantValue
+                @Expression
                 .sSubtract
                 .sExpnEnd
             | '*=':
                 .sAssignmentStmt
                 .sIdentifier
                 .sIdentifier
-                @ConstantValue
+                @Expression
                 .sMultiply
                 .sExpnEnd
             | '/=':
                 .sAssignmentStmt
                 .sIdentifier
                 .sIdentifier
-                @ConstantValue
+                @Expression
                 .sDivide
                 .sExpnEnd
             | '%=':
                 .sAssignmentStmt
                 .sIdentifier
                 .sIdentifier
-                @ConstantValue
+                @Expression
                 .sModulus
                 .sExpnEnd
             | *:
                 @CallStmt
-        ];
+        ] ';';
 
 CallStmt :
         .sCallStmt
@@ -451,28 +449,41 @@ IfStmt :
         [
             | 'elseif':
                 .sElse
+				.sBegin
                 @IfStmt
-            | 'else':
-                .sElse
-                @Block
+				.sEnd
             | *:
-        ];
+				[
+					| 'else':
+						.sElse
+						@Block
+					| *:
+				]
+				'end' ';'
+        ]
+		;
 
 CaseStmt :
         .sCaseStmt
         @Expression
         .sExpnEnd
         'of'
+		'when'
+		@CaseAlternative
         {[
             | 'when':
                 @CaseAlternative
-            | 'else':
-                .sCaseEnd
-                .sCaseElse
-                @Block
-            | 'end':
+            | *:
                 >
         ]};
+		.sCaseEnd
+		[
+		    | 'else':
+                .sCaseElse
+                @Block
+			| *:
+		]
+		'end' ';';
 
 CaseAlternative :
         % A case alternative is a statement labelled by
@@ -493,27 +504,23 @@ WhileStmt :
         .sWhileStmt
         @Expression
         .sExpnEnd
-        @Block;
+        @Block
+		'end' ';';
 
 RepeatStmt :
         .sRepeatStmt
         {
             @Block
             [
-                | ';':
-                    .sRepeatEnd
-                    >
                 | 'while':
-                    @Expression
-                    .sNot
-                    .sExpnEnd
-                    .sRepeatEnd
-                    >
-                | 'end':
                     .sRepeatEnd
                     >
             ]
-        };
+        }
+		@Expression
+		';'
+		.sNot
+		.sExpnEnd;
 
 Expression :
         @SimpleExpression
@@ -592,7 +599,7 @@ Factor :
                 @Factor
                 .sNot
             | '#':
-                pStringLiteral .sStringLiteral
+                @Factor
                 .sLength
             | pStringLiteral:
                 .sStringLiteral
