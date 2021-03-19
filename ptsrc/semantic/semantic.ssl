@@ -800,10 +800,8 @@ Block :
         {[
             | sProcedure:
                 @ProcedureDefinition
-            | sConst:
+            | sVal:
                 @ConstantDefinitions
-            | sType:
-                @TypeDefinitions
             | sVar:
                 @VariableDeclarations
             | *:
