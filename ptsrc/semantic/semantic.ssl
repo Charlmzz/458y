@@ -26,9 +26,17 @@ Input :
         sProgram
         sParmBegin
         sParmEnd
-        sConst
-        sType
+        sLike
+        sPackage
+        sPublic
+        sConcatenate
+        sRepeatString
+        sSubstring
+        sLength
+        sInitialValue
+        sCaseElse
         sVar
+        sVal
         sProcedure
         sBegin
         sEnd
@@ -133,6 +141,15 @@ Output :
         tTrapBegin
         tWriteEnd
         tReadEnd
+        tConcatenate
+        tRepeatString
+        tSubstring
+        tLength
+        tStringEQ
+        tInitialValue
+        tInitEnd
+        tCaseElse
+        tCaseElseEnd
 
         % Compound T-codes - T-code operations that take an operand
         tLiteralAddress
