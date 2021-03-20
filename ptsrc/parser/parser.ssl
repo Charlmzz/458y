@@ -172,7 +172,7 @@ Program :
             ]
         }
         .sParmEnd
-        ';'  @Block  ;
+        ';'  @Block;
 
 Block :
         % Strictly speaking, standard Pascal requires that declarations
@@ -196,7 +196,7 @@ Block :
                         .sPublic
                         @ProcedureHeading 'is'
                         @Block      
-						'end' ';'
+                        'end' ';'
                 ]
             | 'val':
                 .sVal
@@ -210,41 +210,37 @@ Block :
                 pIdentifier  .sIdentifier
                 @ProcedureHeading 'is'
                 @Block
-				'end' ';'
+                'end' ';'
             | 'pkg':
                 .sPackage
                 pIdentifier  .sIdentifier 'is'
                 @Block
-				'end' ';'
+                'end' ';'
             | pIdentifier:
                 @AssignmentOrCallStmt
             | pStringLiteral:
                 @Expression
             | 'if':
                 @IfStmt
-            | 'while':
-                @WhileStmt
             | 'choose':
                 @CaseStmt
             | 'repeat':
-				[
-					| 'while':
-						@WhileStmt
-					| *:
-						@RepeatStmt
-				]
+                [
+                    | 'while':
+                        @WhileStmt
+                    | *:
+                        @RepeatStmt
+                ]
             | ';':
                 .sNullStmt
-                >
             | *:
                 >
         ]}
-		.sEnd;
-
+        .sEnd;
 
 ConstantDefinitions :
         % Accept one or more named constant definitions
-		pIdentifier  .sIdentifier
+        pIdentifier  .sIdentifier
         '=' @ConstantValue % e.g. var a=1, b=2;
         {[
             | ';':
@@ -328,8 +324,7 @@ OptionallySignedIntegerConstant :
 
 VariableDeclarations :
         % Accept only one declaration.
-        @ValueOrLike
-;
+        @ValueOrLike;
 
 ProcedureHeading :
         % Accept zero or more procedure formal parameter declarations.
@@ -449,41 +444,40 @@ IfStmt :
         [
             | 'elseif':
                 .sElse
-				.sBegin
+                .sBegin
                 @IfStmt
-				.sEnd
+                .sEnd
             | *:
-				[
-					| 'else':
-						.sElse
-						@Block
-					| *:
-				]
-				'end' ';'
-        ]
-		;
+               [
+                   | 'else':
+                       .sElse
+                       @Block
+                   | *:
+                ]
+                'end' ';'
+        ];
 
 CaseStmt :
         .sCaseStmt
         @Expression
         .sExpnEnd
         'of'
-		'when'
-		@CaseAlternative
+        'when'
+        @CaseAlternative
         {[
             | 'when':
                 @CaseAlternative
             | *:
                 >
-        ]};
-		.sCaseEnd
-		[
-		    | 'else':
+        ]}
+        .sCaseEnd
+        [
+            | 'else':
                 .sCaseElse
                 @Block
-			| *:
-		]
-		'end' ';';
+            | *:
+        ]
+        'end' ';';
 
 CaseAlternative :
         % A case alternative is a statement labelled by
@@ -505,7 +499,7 @@ WhileStmt :
         @Expression
         .sExpnEnd
         @Block
-		'end' ';';
+        'end' ';';
 
 RepeatStmt :
         .sRepeatStmt
@@ -517,10 +511,10 @@ RepeatStmt :
                     >
             ]
         }
-		@Expression
-		';'
-		.sNot
-		.sExpnEnd;
+        @Expression
+        ';'
+        .sNot
+        .sExpnEnd;
 
 Expression :
         @SimpleExpression
