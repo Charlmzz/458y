@@ -319,6 +319,7 @@ OptionallySignedIntegerConstant :
 
 VariableDeclarations :
         % Accept only one declaration.
+        pIdentifier  .sIdentifier
         @ValueOrLike;
 
 ProcedureHeading :
