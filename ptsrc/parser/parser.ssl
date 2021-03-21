@@ -283,23 +283,20 @@ ValueOrLike :
 
 LikeClause:
         [
-            | ':':
-                [
-                    | 'file':
-                        .sFile 'like' .sLike @VariableOrConstant
-                    | *:
-                        'like' .sLike @VariableOrConstant
-                ]
             | '[':
                 .sArray
-                @constantValue ']' ':'
-                [
-                    | 'file':
-                        .sFile 'like' .sLike @VariableOrConstant
-                    | *:
-                        'like' .sLike @VariableOrConstant
-                ]
-        ];
+                @ConstantValue
+                ']'
+            | *:
+        ]
+        ':'
+        [
+            | 'file':
+                .sFile
+            | *:
+        ]
+        'like' .sLike
+        @VariableOrConstant;
 
 VariableOrConstant:
         [
