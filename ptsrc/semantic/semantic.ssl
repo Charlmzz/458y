@@ -1030,7 +1030,6 @@ VariableDeclarations :
                 oTypeStkPop
                 oSymbolStkPop
             | *:
-                >
         ];
 
 EnterVariableAttributes :
