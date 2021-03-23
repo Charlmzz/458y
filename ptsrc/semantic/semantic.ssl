@@ -309,6 +309,9 @@ mechanism SymbolTable :
         % Return true if any external names (program parameters)
         % have not yet been declared.
 
+    oSymbolTblMergePublicScope
+        % Unlink everything that is not public from the package's scope 
+        % and then merge it with the enclosing one
 
 % Symbol Stack types and mechanism
 
@@ -321,6 +324,7 @@ type SymbolKind :
         syFunction
         syExternal
         syExpression
+        syPackage
         syUndefined;
 
 type StdRoutine :
@@ -410,6 +414,9 @@ mechanism SymbolStack :
     oSymbolStkChooseStandardRoutine >> StdRoutine
         % If the top entry is a standard routine symbol, return a
         % value indicating which routine it is, otherwise return null.
+
+    oSymbolStkSetPublicFlag
+        % Set the public flage
 
     oSymbolStkPop;
         % Pop the symbol stack
@@ -804,6 +811,8 @@ Block :
                 @ConstantDefinitions
             | sVar:
                 @VariableDeclarations
+            | sPackage:
+                @PackageDefinition
             | sAssignmentStmt:
                 @AssignmentStmt
             | sCallStmt:
@@ -836,6 +845,11 @@ ConstantDefinitions :           % Process named constant definitions
                         % The new definition will now obscure the old one
                 ]
                 oSymbolStkSetKind(syConstant)
+                [
+                    | sPublic:
+                        oSymbolStkSetPublicFlag
+                    | *:
+                ]
                 @ConstantValue
                 oSymbolStkEnterTypeReference
                 oTypeStkPop
@@ -1023,6 +1037,11 @@ VariableDeclarations :
                         % The new definition will obscure the old one
                 ]
                 [
+                    | sPublic:
+                        oSymbolStkSetPublicFlag
+                    | *:
+                ]
+                [
                     | sInitialValue:
                         .tInitialValue
                         @Expression
@@ -1135,6 +1154,48 @@ AllocateVar :
                 ]
         ];
 
+PackageDefinition :
+        sIdentifier  oSymbolStkPushLocalIdentifier      % procedure name
+        [ oSymbolStkChooseKind
+            | syUndefined:
+            | syExternal:
+                % Program parameters must be declared as file variables
+                #eExternalDeclare
+            | *:
+                #eMultiplyDefined
+                % New definition obscures old one.
+        ]
+        % Procedure bodies only execute when the routine is called
+        % so we need to branch around the procedure's code
+        oFixPushForwardBranch
+        oEmitNullAddress
+
+        oSymbolStkSetKind(syProcedure)
+        oValuePushCodeAddress
+        oSymbolStkEnterValue
+        oValuePop
+        oTypeStkPush(tpNull)
+        oTypeStkSetRecursionFlag(yes)
+        oTypeTblEnter
+        oSymbolStkEnterTypeReference
+        oSymbolTblEnter
+
+        oSymbolTblPushScope     % procedure scope
+
+        @ProcedureHeading
+        @Block
+
+        oTypeStkSetRecursionFlag(no)
+        oTypeTblUpdate
+        oTypeStkPop
+        oSymbolTblUpdate
+        oSymbolStkPop
+
+        oSymbolTblMergePublicScope
+        oSymbolTblPreserveParameters
+
+        oFixPopForwardBranch;   % fix branch around procedure above
+
 ProcedureDefinition :
         sIdentifier  oSymbolStkPushLocalIdentifier      % procedure name
         [ oSymbolStkChooseKind
@@ -1155,6 +1216,11 @@ ProcedureDefinition :
         oSymbolStkSetKind(syProcedure)
         oValuePushCodeAddress
         oSymbolStkEnterValue
+        [
+            | sPublic:
+                oSymbolStkSetPublicFlag
+            | *:
+        ]
         oValuePop
         oTypeStkPush(tpNull)
         oTypeStkSetRecursionFlag(yes)

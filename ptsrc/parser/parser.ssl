@@ -183,10 +183,12 @@ Block :
                 [
                     | 'val':
                         .sVal
+                        pIdentifier  .sIdentifier
                         .sPublic
                         @ConstantDefinitions
                     | 'var':
                         .sVar
+                        pIdentifier  .sIdentifier
                         .sPublic
                         @VariableDeclarations
                     | 'fun':
@@ -199,9 +201,11 @@ Block :
                 ]
             | 'val':
                 .sVal
+                pIdentifier  .sIdentifier
                 @ConstantDefinitions
             | 'var':
                 .sVar
+                pIdentifier  .sIdentifier
                 @VariableDeclarations
             | 'fun':
                 .sProcedure
@@ -238,8 +242,6 @@ Block :
         .sEnd;
 
 ConstantDefinitions :
-        % Accept one or more named constant definitions
-        pIdentifier  .sIdentifier
         '=' @ConstantValue % e.g. var a=1, b=2;
         {[
             | ';':
@@ -320,7 +322,6 @@ OptionallySignedIntegerConstant :
 
 VariableDeclarations :
         % Accept only one declaration.
-        pIdentifier  .sIdentifier
         @ValueOrLike;
 
 ProcedureHeading :
