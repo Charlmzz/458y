@@ -1036,9 +1036,9 @@ VariableDeclarations :
                     | *:
                         @TypeBody
                 ]
-                        @EnterVariableAttributes
-                        oTypeStkPop
-                        oSymbolStkPop
+                @EnterVariableAttributes
+                oTypeStkPop
+                oSymbolStkPop
             | *:
         ];
 
