@@ -1031,13 +1031,14 @@ VariableDeclarations :
                         @EmitStore
                         oTypeStkPop
                         oSymbolStkPop
+                        % Accepts a type specification and pushes its type to the Type Stack.
+                        % Creates type table entries for the type and any new subtypes as necessary.
+                    | *:
+                        @TypeBody
                 ]
-                % Accepts a type specification and pushes its type to the Type Stack.
-                % Creates type table entries for the type and any new subtypes as necessary.
-                @TypeBody
-                @EnterVariableAttributes
-                oTypeStkPop
-                oSymbolStkPop
+                        @EnterVariableAttributes
+                        oTypeStkPop
+                        oSymbolStkPop
             | *:
         ];
 
