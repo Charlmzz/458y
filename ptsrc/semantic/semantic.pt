@@ -921,8 +921,7 @@ program SemanticAnalysis (output, semanticSsl, parseStream, temp, tCode, options
                         assert56:
                             write ('case display stack not empty at end of semantic phase');
                         assert57:
-                            write ('the top of current symbol stack cannot be public');
-                            ; 
+                            write ('the top of current symbol stack cannot be public'); 
                     end;
 
                     writeln;
