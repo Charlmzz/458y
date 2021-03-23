@@ -1029,7 +1029,6 @@ VariableDeclarations :
                         .tInitEnd
                         .tLiteralAddress
                         @EmitStore
-                        oTypeStkPop
                         oSymbolStkPop
                         % Accepts a type specification and pushes its type to the Type Stack.
                         % Creates type table entries for the type and any new subtypes as necessary.
