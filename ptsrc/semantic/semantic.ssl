@@ -820,7 +820,7 @@ Block :
             | *:
                 >
         ]}
-        ;
+        sEnd;
 
 ConstantDefinitions :           % Process named constant definitions
         {[

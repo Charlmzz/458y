@@ -191,6 +191,7 @@ Block :
                         @VariableDeclarations
                     | 'fun':
                         .sProcedure
+                        pIdentifier  .sIdentifier
                         .sPublic
                         @ProcedureHeading 'is'
                         @Block      
