@@ -1046,6 +1046,7 @@ VariableDeclarations :
                         .tInitialValue
                         @Expression
                         .tInitEnd
+                        @EnterVariableAttributes
                         .tLiteralAddress
                         @EmitStore
                         oSymbolStkPop
@@ -1167,8 +1168,6 @@ PackageDefinition :
         ]
         % Procedure bodies only execute when the routine is called
         % so we need to branch around the procedure's code
-        oFixPushForwardBranch
-        oEmitNullAddress
 
         oSymbolStkSetKind(syProcedure)
         oValuePushCodeAddress
@@ -1193,7 +1192,7 @@ PackageDefinition :
         oSymbolTblMergePublicScope
         oSymbolTblPreserveParameters
 
-        oFixPopForwardBranch;   % fix branch around procedure above
+        ;
 
 ProcedureDefinition :
         sIdentifier  oSymbolStkPushLocalIdentifier      % procedure name
