@@ -2323,7 +2323,7 @@ program SemanticAnalysis (output, semanticSsl, parseStream, temp, tCode, options
                         { Push the value of the last string token to be accepted }
                         begin
                             Assert((compoundToken = sStringLiteral), assert37);
-                            ValueStackPush(compoundTokenText[1]);
+                            ValueStackPush(codeAreaEnd);
                         end;
 
                     oValuePushStringLength:
@@ -2391,8 +2391,10 @@ program SemanticAnalysis (output, semanticSsl, parseStream, temp, tCode, options
                         case typeStkKind[typeStkTop] of
                             tpInteger, tpSubrange:
                                 dataAreaEnd := dataAreaEnd + wordSize;
-                            tpChar, tpBoolean:
+                            tpBoolean:
                                 dataAreaEnd := dataAreaEnd + byteSize;
+                            tpChar:
+                                dataAreaEnd := dataAreaEnd + stringSize;
                             tpArray:
                                 begin
                                     assert (typeStkComponentLink[typeStkTop] <> null, assert59);
@@ -2401,6 +2403,8 @@ program SemanticAnalysis (output, semanticSsl, parseStream, temp, tCode, options
                                     kind := typeTblKind[typeStkComponentLink[typeStkTop]];
                                     if (kind = tpInteger) or (kind = tpSubrange) then
                                         size := size * wordSize;
+                                    if (kind = tpChar) then
+                                        size := size * stringSize;
 
                                     dataAreaEnd := dataAreaEnd + size
                                 end;
@@ -2505,6 +2509,7 @@ program SemanticAnalysis (output, semanticSsl, parseStream, temp, tCode, options
                                     EmitOutputToken(compoundTokenText[i]);
                                     i := i + 1;
                                 end
+                            EmitOutputToken(0);
                         end;
 
                     oEmitCaseBranchTable:
