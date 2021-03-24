@@ -1703,6 +1703,8 @@ StringLiteral :
         % The value of a packed array is its address.
 
         oValuePushStringLength
+        .tSkipString
+        .tStringData
         oTypeStkPush(tpChar)
         oTypeStkLinkToStandardType(stdChar)
         oValuePop
