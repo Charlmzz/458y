@@ -249,7 +249,8 @@ ConstantDefinitions :
             | *:
                 ',' pIdentifier .sIdentifier
                 '=' @ConstantValue
-        ]};
+        ]}
+        ';';
 
 ConstantValue :
         [
@@ -322,7 +323,7 @@ OptionallySignedIntegerConstant :
 
 VariableDeclarations :
         % Accept only one declaration.
-        @ValueOrLike;
+        @ValueOrLike ';';
 
 ProcedureHeading :
         % Accept zero or more procedure formal parameter declarations.

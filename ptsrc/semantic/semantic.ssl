@@ -1182,7 +1182,6 @@ PackageDefinition :
 
         oSymbolTblPushScope     % procedure scope
 
-        @ProcedureHeading
         @Block
 
         oTypeStkSetRecursionFlag(no)
