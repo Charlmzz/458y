@@ -228,7 +228,7 @@ type Integer :
 
         % These two sizes are machine dependent
         byteSize = 1
-        wordSize = 4;
+        wordSize = 4
         stringSize = 256;
 
 type Boolean :
@@ -544,9 +544,8 @@ type TrapKind :
         trWriteChar = 9
         trReadInteger = 10
         trReadChar = 11
-        trAssign = 12;
-        trReadString = 108;
-        trWriteString = 109;
+        trAssign = 12
+        trReadString = 13;
 
 mechanism Emit :
     % Emit writes to the output "t-code" stream (the code area),
