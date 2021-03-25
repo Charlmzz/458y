@@ -1049,8 +1049,8 @@ VariableDeclarations :
                     | sInitialValue:
                         .tInitialValue
                         @Expression
+                        @TypeTblEnterIfNew
                         .tInitEnd
-                        @EnterVariableAttributes
                         .tLiteralAddress
                         @EmitStore
                         oSymbolStkPop
@@ -1058,8 +1058,8 @@ VariableDeclarations :
                         % Creates type table entries for the type and any new subtypes as necessary.
                     | *:
                         @TypeBody
-                        @EnterVariableAttributes
                 ]
+                @EnterVariableAttributes
                 oTypeStkPop
                 oSymbolStkPop
             | *:
