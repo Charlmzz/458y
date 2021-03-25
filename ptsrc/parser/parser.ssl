@@ -244,11 +244,12 @@ Block :
 ConstantDefinitions :
         '=' @ConstantValue % e.g. var a=1, b=2;
         {[
-            | ';':
-                >
-            | *:
-                ',' pIdentifier .sIdentifier
+            | ',':
+                pIdentifier
+                .sIdentifier
                 '=' @ConstantValue
+            | *:
+                >
         ]}
         ';';
 
