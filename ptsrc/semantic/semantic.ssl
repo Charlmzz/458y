@@ -1173,7 +1173,7 @@ PackageDefinition :
         % Procedure bodies only execute when the routine is called
         % so we need to branch around the procedure's code
 
-        oSymbolStkSetKind(syProcedure)
+        oSymbolStkSetKind(syPackage)
         oValuePushCodeAddress
         oSymbolStkEnterValue
         oValuePop
