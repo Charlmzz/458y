@@ -1724,9 +1724,8 @@ UnaryOperator :
                 oTypeStkPop
             | sLength:
                 .tLength
-                oTypeStkPush(tpInteger)
-                @CompareAndSwapTypes
                 oTypeStkPop
+                oTypeStkPush(tpInteger)
             | *:
                 >>
         ]
