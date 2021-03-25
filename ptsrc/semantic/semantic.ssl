@@ -1763,8 +1763,11 @@ BinaryOperator :
                 @CompareOperandAndResultTypes
             | sRepeatString:
                 .tRepeatString
+                oTypeStkPop
+                oTypeStkPop
+                oSymbolStkPop
                 oTypeStkPush(tpChar)
-                @CompareOperandAndResultTypes
+                oSymbolStkSetKind(syExpression)
             | sEq:
                 [ oTypeStkChooseKind
                     | tpChar:
