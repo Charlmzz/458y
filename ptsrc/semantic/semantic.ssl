@@ -1758,11 +1758,11 @@ BinaryOperator :
                 .tOr
                 oTypeStkPush(tpBoolean)
                 @CompareOperandAndResultTypes
-            | sConcatenate
+            | sConcatenate:
                 .tConcatenate
                 oTypeStkPush(tpChar)
                 @CompareOperandAndResultTypes
-            | sRepeatString
+            | sRepeatString:
                 .tRepeatString
                 oTypeStkPush(tpChar)
                 @CompareOperandAndResultTypes
