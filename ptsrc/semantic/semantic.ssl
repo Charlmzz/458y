@@ -1049,17 +1049,27 @@ VariableDeclarations :
                     | sInitialValue:
                         .tInitialValue
                         @Expression
-                        @TypeTblEnterIfNew
                         .tInitEnd
-                        .tLiteralAddress
-                        @EmitStore
+                        @TypeTblEnterIfNew
                         oSymbolStkPop
+                        @EnterVariableAttributes
+                        .tLiteralAddress
+                        oValuePushSymbol
+                        oEmitValue
+                        oValuePop
+                        [ oTypeStkChooseKind
+                            | tpArray:
+                                #eScalarReqd
+                            | *:
+                                @EmitStore
+                        ]
                         % Accepts a type specification and pushes its type to the Type Stack.
                         % Creates type table entries for the type and any new subtypes as necessary.
                     | *:
                         @TypeBody
+                        @EnterVariableAttributes
                 ]
-                @EnterVariableAttributes
+
                 oTypeStkPop
                 oSymbolStkPop
             | *:
