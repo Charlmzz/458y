@@ -545,7 +545,7 @@ type TrapKind :
         trReadChar = 11
         trAssign = 12
         trReadString = 108
-        trWriteString = 109；
+        trWriteString = 109;
 
 mechanism Emit :
     % Emit writes to the output "t-code" stream (the code area),
