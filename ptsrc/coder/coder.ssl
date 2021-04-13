@@ -782,6 +782,19 @@ Block:
             @ReadProc
         | tTrapBegin:
             @TrapStmt
+        | tInitialValue:
+            @OperandPushExpression
+            [
+                | tStoreInteger, tStoreAddress:
+                    oOperandSetLength(word)
+                    @OperandAssignIntegerPopPop
+                | tStoreChar:
+                    oOperandSetLength(byte)
+                    @OperandAssignCharPopPop
+                | tStoreBoolean:
+                    oOperandSetLength(byte)
+                    @OperandAssignBooleanPopPop
+            ]
         | *:
             >
     ]};
