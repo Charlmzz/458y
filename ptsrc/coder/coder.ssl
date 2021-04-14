@@ -786,6 +786,7 @@ Block:
             @OperandPushExpression
             tInitEnd
             tLiteralAddress
+            oOperandPushVariable
             [
                 | tStoreInteger, tStoreAddress:
                     oOperandSetLength(word)
