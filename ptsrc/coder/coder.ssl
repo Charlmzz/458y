@@ -1781,10 +1781,7 @@ OperandCheckedSubscriptNonManifestCharPop:
     % Scale subscript by word size              % ... arraydesc, %T
     oOperandPushMode(mManifest)
     oOperandSetLength(string)
-    oOperandSetValue(two)                       % ... arraydesc, %T, 2
-    oEmitDouble(iShl)                           %       shll    $2, %T
-    oEmitDouble(iShl)                           %       shll    $2, %T
-    oEmitDouble(iShl)                           %       shll    $2, %T
+    oOperandSetValue(eight)                       % ... arraydesc, %T, 8
     oEmitDouble(iShl)                           %       shll    $2, %T
     oOperandPop 
 
@@ -1836,14 +1833,11 @@ OperandUncheckedSubscriptNonManifestCharPop:
             % so optimize subscripting as best we can
             oOperandSwap                        % ... arraydesc, subscript
 
-            % Scale subscript by integer element size 
+            % Scale subscript by string element size 
             @OperandForceIntoTemp               %       movl    subscript, %T
             oOperandPushMode(mManifest)
             oOperandSetLength(word)
-            oOperandSetValue(two)
-            oEmitDouble(iShl)                   %       shl     $2, %T
-            oEmitDouble(iShl)                   %       shl     $2, %T
-            oEmitDouble(iShl)                   %       shl     $2, %T
+            oOperandSetValue(eight)
             oEmitDouble(iShl)                   %       shl     $2, %T
             oOperandPop
             oOperandSwap                        % ... %T, arraydesc
@@ -1862,7 +1856,7 @@ OperandUncheckedSubscriptNonManifestCharPop:
             oOperandPushMode(mManifest)         % ... %T, arraydesc+8, lower, 4
             oOperandSetLength(word)
             oOperandSetValue(four)
-            oOperandMultiplyManifestValues      % (scale lower bound by integer size)
+            oOperandMultiplyManifestValues      % (scale lower bound by string size)
             oOperandPop                         % ... %T, arraydesc+8, lower*4
             oOperandSubtractManifestValues      % ... %T, arraydesc+8-lower
             oOperandPop
@@ -2951,25 +2945,15 @@ OperandAssignCharPopPop:
     oOperandSetLength(word)
     oOperandPushMode(mManifest)
     oOperandSetLength(word)
-    oOperandSetValue(four)      % ... %esp, 1arg*4
+    oOperandSetValue(eight)      % ... %esp, 1arg*4
     oEmitDouble(iAdd)           %       addl    $4, %esp
     oOperandPop
     oOperandPop
 
-    % Accept result
-    oOperandPushMode(mScratchReg1)
-    oOperandSetLength(word)
-    oOperandPushMode(mResultReg)
-    oOperandSetLength(word)
-    oEmitDouble(iMov)           %       movl    %eax, %S1
-    oOperandPop %eax
 
     % Restore temp regs
-    @RestoreTempRegsFromStack   %       popl    %edx .. $eax
+    @RestoreTempRegsFromStack;   %       popl    %edx .. $eax
 
-    @OperandForceIntoTemp       %       movl    %S1, %T
-    oOperandSetLength(byte); 
-;
 
 
 OperandAssignBooleanPopPop:
