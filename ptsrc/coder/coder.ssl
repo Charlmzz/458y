@@ -787,6 +787,7 @@ Block:
             tInitEnd
             tLiteralAddress
             oOperandPushVariable
+            oOperandSwap
             [
                 | tStoreInteger, tStoreAddress:
                     oOperandSetLength(word)
