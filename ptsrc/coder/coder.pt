@@ -1884,14 +1884,12 @@ program Coder (output, coderSsl, tCode, object, options);
                                 compoundTokenLength := compoundTokenValue;
                                 compoundTokenValue := tCodeAddress;
                                 i := 1;
-                                while i <= compoundTokenLength do
+                                while i <= compoundTokenLength + 1 do
                                     begin
                                         read (tCode, compoundTokenText[i]);
                                         i := i + 1
                                     end;
-                                nextTCodeAddress := nextTCodeAddress + compoundTokenLength;
-                                read (tCode, 0)
-                                nextTCodeAddress := nextTCodeAddress + 1;
+                                nextTCodeAddress := nextTCodeAddress + compoundTokenLength +1;
                             end;
                     end         { case compoundToken }
                 end;
