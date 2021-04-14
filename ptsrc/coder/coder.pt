@@ -490,6 +490,7 @@ program Coder (output, coderSsl, tCode, object, options);
 
         { Machine word size }
         wordSize = 4;           { longword (4 bytes) on SUN }
+        stringSize = 256;
 
         { Temporary regs - %ebx, %ecx, %esi, %edi }
         firstTempReg = 1;       
@@ -1802,6 +1803,8 @@ program Coder (output, coderSsl, tCode, object, options);
                     if operandStkLength[operandStkTop-1] = word then
                         { Convert a byte offset to a word offset }
                         subscript := subscript * wordSize;
+                    if operandStkLength[operandStkTop-1] = string then
+                        subscript := subscript * stringSize;
                     { Set the subscripted varable's address.  Note that the array variable's 
                       address points to the base of a 2 word descriptor (lower, upper bound). }
                     operandStkValue[operandStkTop-1] := 
@@ -1887,6 +1890,8 @@ program Coder (output, coderSsl, tCode, object, options);
                                         i := i + 1
                                     end;
                                 nextTCodeAddress := nextTCodeAddress + compoundTokenLength;
+                                read (tCode, 0)
+                                nextTCodeAddress := nextTCodeAddress + 1;
                             end;
                     end         { case compoundToken }
                 end;
@@ -2240,7 +2245,7 @@ program Coder (output, coderSsl, tCode, object, options);
                     oOperandPushChar:
                         begin
                             Assert ( (compoundToken = tLiteralChar), assert19);
-                            OperandPush (mManifest, compoundTokenValue, undefined, byte)
+                            OperandPush (mStatic, compoundTokenValue, undefined, word)
                         end;
 
                     oOperandPushBoolean:
