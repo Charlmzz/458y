@@ -1221,9 +1221,10 @@ EmitDefaultCaseAbort:
             oOperandPushMode(mTrap)
             oOperandSetValue(trCaseAbort)
             oEmitSingle(iCall)                  %       call  caseAbort
-    ]
+            oOperandPop
+    ];
 
-    oOperandPop;
+
 
 
 EmitCaseSubscriptJump:

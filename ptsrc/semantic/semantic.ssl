@@ -1571,6 +1571,7 @@ CaseStmt :
                 .tCaseElse
                 @Statement
                 .tCaseElseEnd
+            | *:
         ]
         % emit merge branches for case alternatives
         {[ oCountChoose         % number of case alternatives
