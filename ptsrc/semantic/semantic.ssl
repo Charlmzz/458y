@@ -1698,8 +1698,8 @@ Operand :
                 oSymbolStkPush(syExpression)
                 @StringLiteral  % pushes type and value
                 .tLiteralAddress
-                .tFetchChar
                 oEmitValue
+                .tFetchChar
                 oValuePop
             | sFile:
                 @Expression
@@ -1713,13 +1713,19 @@ StringLiteral :
         % Pushes the type and value. 
         % The value of a packed array is its address.
 
-        oValuePushStringLength
         .tSkipString
+        oFixPushForwardBranch
+        oEmitNullAddress
         .tStringData
-        oTypeStkPush(tpChar)
-        oTypeStkLinkToStandardType(stdChar)
+        oValuePushStringLength
+        oEmitValue
         oValuePop
-        oValuePushChar;
+        oValuePushCodeAddress
+        oValueNegate
+        oEmitString
+        oFixPopForwardBranch
+        oTypeStkPush(tpChar)
+        oTypeStkLinkToStandardType(stdChar);
 
 UnaryOperator :
         [
