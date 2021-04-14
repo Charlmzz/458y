@@ -833,7 +833,7 @@ Routine:
                             oOperandSetLength(word)
                             @OperandAssignIntegerPopPop
                         | tStoreChar:
-                            oOperandSetLength(length)
+                            oOperandSetLength(string)
                             @OperandAssignCharPopPop
                         | tStoreBoolean:
                             oOperandSetLength(byte)
@@ -3193,16 +3193,20 @@ OperandForceIntoTemp:
             [ oOperandChooseLength
                 | byte:
                     @OperandPushTempByte
+                    oOperandSwap
+                    oEmitDouble(iMov)   % mov(b) operand, dN
+                    @OperandPopAndFreeTemp
+                    oOperandSetMode(mTemp)
                 | word:
                     @OperandPushTempWord
+                    oOperandSwap
+                    oEmitDouble(iMov)   % mov(b) operand, dN
+                    @OperandPopAndFreeTemp
+                    oOperandSetMode(mTemp)
                 | string:
                     @OperandForceAddressIntoTemp
-                    >
             ]
-            oOperandSwap
-            oEmitDouble(iMov)   % mov(b) operand, dN
-            @OperandPopAndFreeTemp
-            oOperandSetMode(mTemp)
+
     ];
 
 
