@@ -1227,16 +1227,17 @@ ProcedureDefinition :
         oSymbolStkSetKind(syProcedure)
         oValuePushCodeAddress
         oSymbolStkEnterValue
-        [
-            | sPublic:
-                oSymbolStkSetPublicFlag
-            | *:
-        ]
+
         oValuePop
         oTypeStkPush(tpNull)
         oTypeStkSetRecursionFlag(yes)
         oTypeTblEnter
         oSymbolStkEnterTypeReference
+        [
+            | sPublic:
+                oSymbolStkSetPublicFlag
+            | *:
+        ]
         oSymbolTblEnter
 
         oSymbolTblPushScope     % procedure scope
@@ -1288,7 +1289,23 @@ ProcedureHeading :
         @ProcedurePrologue;                    % pops types from type stack
 
 ProcedureParameterType :
-        @SimpleType;
+        @SimpleType
+        [ oSymbolStkChooseKind
+            | syVariable:
+                [ oTypeStkChooseKind
+                    | tpArray, tpFile:
+                        #eNonScalarValParm
+                        oTypeStkPop
+                        oTypeStkPush (tpInteger)
+                        oTypeStkLinkToStandardType (stdInteger)
+                    | *:
+                ]
+            | *:
+        ]
+        oSymbolStkEnterTypeReference
+        @AllocateVar
+        oSymbolTblEnter
+        ;
 
 ProcedurePrologue :
         % Now all the formal parameter symbols are stacked on top of the
