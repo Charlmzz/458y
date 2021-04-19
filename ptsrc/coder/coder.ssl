@@ -1508,6 +1508,16 @@ OperandPushExpression:
             @OperandOrPop
         | tInfixOr:
             @OperandInfixOr
+        | tConcatenate:
+            @OperandConcatenatePop
+        | tRepeatString:
+            @OperandRepeatStringPop
+        | tSubstring:
+            @OperandSubstringPopPop
+        | tLength:
+            @OperandLength
+        | tStringEQ:
+            @OperandStringEqualPop
         | tAnd:
             @OperandNot
             @OperandOrPop
@@ -1542,6 +1552,200 @@ OperandPushExpression:
             >
     ]};
 
+OperandConcatenatePop:
+    @SaveTempRegsToStack
+    @OperandForceAddressIntoTemp
+    @OperandForcetoStack
+    @OperandPopAndFreeTemp
+
+    @OperandForceAddressIntoTemp
+    @OperandForcetoStack
+    @OperandPopAndFreeTemp
+    oOperandPushMode(mTrap)
+    oOperandSetValue(trConcatenate)
+    oOperandSetLength(word)
+    oEmitSingle(iCall)          %       call    pttrapNN
+    oOperandPop        
+
+    % Pop argument
+    oOperandPushMode(mStackReg)
+    oOperandSetLength(word)
+    oOperandPushMode(mManifest)
+    oOperandSetLength(word)
+    oOperandSetValue(eight)      % ... %esp, 1arg*4
+    oEmitDouble(iAdd)           %       addl    $4, %esp
+    oOperandPop
+    oOperandPop
+
+    % Accept result
+    oOperandPushMode(mScratchReg1)
+    oOperandSetLength(word)
+    oOperandPushMode(mResultReg)
+    oOperandSetLength(word)
+    oEmitDouble(iMov)           %       movl    %eax, %S1
+    oOperandPop %eax
+
+    % Restore temp regs
+    @RestoreTempRegsFromStack   %       popl    %edx .. $eax
+
+    @OperandForceIntoTemp       %       movl    %S1, %T
+    oOperandSetLength(word)
+;
+
+OperandSubstringPopPop:
+    @SaveTempRegsToStack
+    @OperandForcetoStack
+    @OperandForcetoStack
+
+    @OperandForceAddressIntoTemp
+    @OperandForcetoStack
+    @OperandPopAndFreeTemp
+
+    oOperandPushMode(mTrap)
+    oOperandSetValue(trSubstring)
+    oOperandSetLength(word)
+    oEmitSingle(iCall)          %       call    pttrapNN
+    oOperandPop        
+
+    % Pop argument
+    oOperandPushMode(mStackReg)
+    oOperandSetLength(word)
+    oOperandPushMode(mManifest)
+    oOperandSetLength(word)
+    oOperandSetValue(twelve)      % ... %esp, 1arg*4
+    oEmitDouble(iAdd)           %       addl    $4, %esp
+    oOperandPop
+    oOperandPop
+
+    % Accept result
+    oOperandPushMode(mScratchReg1)
+    oOperandSetLength(word)
+    oOperandPushMode(mResultReg)
+    oOperandSetLength(word)
+    oEmitDouble(iMov)           %       movl    %eax, %S1
+    oOperandPop %eax
+
+    % Restore temp regs
+    @RestoreTempRegsFromStack   %       popl    %edx .. $eax
+
+    @OperandForceIntoTemp       %       movl    %S1, %T
+    oOperandSetLength(word)
+;
+
+OperandRepeatStringPop:
+    @SaveTempRegsToStack
+    @OperandForcetoStack
+
+    @OperandForceAddressIntoTemp
+    @OperandForcetoStack
+    @OperandPopAndFreeTemp
+    oOperandPushMode(mTrap)
+    oOperandSetValue(trRepeatString)
+    oOperandSetLength(word)
+    oEmitSingle(iCall)          %       call    pttrapNN
+    oOperandPop        
+
+    % Pop argument
+    oOperandPushMode(mStackReg)
+    oOperandSetLength(word)
+    oOperandPushMode(mManifest)
+    oOperandSetLength(word)
+    oOperandSetValue(eight)      % ... %esp, 1arg*4
+    oEmitDouble(iAdd)           %       addl    $4, %esp
+    oOperandPop
+    oOperandPop
+
+    % Accept result
+    oOperandPushMode(mScratchReg1)
+    oOperandSetLength(word)
+    oOperandPushMode(mResultReg)
+    oOperandSetLength(word)
+    oEmitDouble(iMov)           %       movl    %eax, %S1
+    oOperandPop %eax
+
+    % Restore temp regs
+    @RestoreTempRegsFromStack   %       popl    %edx .. $eax
+
+    @OperandForceIntoTemp       %       movl    %S1, %T
+    oOperandSetLength(word)
+;
+
+OperandLength:
+    @SaveTempRegsToStack
+
+    @OperandForceAddressIntoTemp
+    @OperandForcetoStack
+    @OperandPopAndFreeTemp
+    oOperandPushMode(mTrap)
+    oOperandSetValue(trLength)
+    oOperandSetLength(word)
+    oEmitSingle(iCall)          %       call    pttrapNN
+    oOperandPop        
+
+    % Pop argument
+    oOperandPushMode(mStackReg)
+    oOperandSetLength(word)
+    oOperandPushMode(mManifest)
+    oOperandSetLength(word)
+    oOperandSetValue(four)      % ... %esp, 1arg*4
+    oEmitDouble(iAdd)           %       addl    $4, %esp
+    oOperandPop
+    oOperandPop
+
+    % Accept result
+    oOperandPushMode(mScratchReg1)
+    oOperandSetLength(word)
+    oOperandPushMode(mResultReg)
+    oOperandSetLength(word)
+    oEmitDouble(iMov)           %       movl    %eax, %S1
+    oOperandPop %eax
+
+    % Restore temp regs
+    @RestoreTempRegsFromStack   %       popl    %edx .. $eax
+
+    @OperandForceIntoTemp       %       movl    %S1, %T
+    oOperandSetLength(byte))
+;
+
+OperandStringEqualPop:
+    @SaveTempRegsToStack
+    @OperandForceAddressIntoTemp
+    @OperandForcetoStack
+    @OperandPopAndFreeTemp
+
+    @OperandForceAddressIntoTemp
+    @OperandForcetoStack
+    @OperandPopAndFreeTemp
+    oOperandPushMode(mTrap)
+    oOperandSetValue(trStringEqual)
+    oOperandSetLength(word)
+    oEmitSingle(iCall)          %       call    pttrapNN
+    oOperandPop        
+
+    % Pop argument
+    oOperandPushMode(mStackReg)
+    oOperandSetLength(word)
+    oOperandPushMode(mManifest)
+    oOperandSetLength(word)
+    oOperandSetValue(eight)      % ... %esp, 1arg*4
+    oEmitDouble(iAdd)           %       addl    $4, %esp
+    oOperandPop
+    oOperandPop
+
+    % Accept result
+    oOperandPushMode(mScratchReg1)
+    oOperandSetLength(word)
+    oOperandPushMode(mResultReg)
+    oOperandSetLength(word)
+    oEmitDouble(iMov)           %       movl    %eax, %S1
+    oOperandPop %eax
+
+    % Restore temp regs
+    @RestoreTempRegsFromStack   %       popl    %edx .. $eax
+
+    @OperandForceIntoTemp       %       movl    %S1, %T
+    oOperandSetLength(word)
+;
 
 EmitStringAddress:
     % Get the address of a string into a temp reg.
@@ -2149,6 +2353,16 @@ OperandPushExpressionAssignPopPop:
                 | *:
                     @OperandNot
             ]
+        | tConcatenate:
+            @OperandConcatenatePop
+        | tRepeatString:
+            @OperandRepeatStringPop
+        | tSubstring:
+            @OperandSubstringPopPop
+        | tLength:
+            @OperandLength
+        | tStringEQ:
+            @OperandStringEqualPop
         | tInfixOr:
             @OperandInfixOr
         | tOr:
@@ -2674,16 +2888,17 @@ OperandChr:
 OperandOrd:
     % Byte operand is on top of operand stack
     % Fill a register with integer zero
-    oOperandPushMode(mManifest)
+    @OperandForceAddressIntoTemp       
+    oOperandPushMode(mTempIndirect)
     oOperandSetValue(zero)
-    oOperandSetLength(word)
+    oOperandSetLength(byte)
     @OperandForceIntoTemp       %       movl    $0, %T
     % Move the character value into the low order byte
     oOperandSetLength(byte)
     oOperandSwap
     oEmitDouble(iMov)           %       movb    y, %T
     @OperandPopAndFreeTemp
-    % Treat the register as word, to get the character's integer value
+    % Treat the register as integer
     oOperandSetLength(word);
 
 
