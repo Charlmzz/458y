@@ -1704,7 +1704,7 @@ OperandLength:
     @RestoreTempRegsFromStack   %       popl    %edx .. $eax
 
     @OperandForceIntoTemp       %       movl    %S1, %T
-    oOperandSetLength(byte))
+    oOperandSetLength(byte)
 ;
 
 OperandStringEqualPop:
