@@ -1595,7 +1595,9 @@ OperandConcatenatePop:
 OperandSubstringPopPop:
     @SaveTempRegsToStack
     @OperandForcetoStack
+    @OperandPopAndFreeTemp
     @OperandForcetoStack
+    @OperandPopAndFreeTemp
 
     @OperandForceAddressIntoTemp
     @OperandForcetoStack
