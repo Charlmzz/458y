@@ -1806,12 +1806,25 @@ BinaryOperator :
                 ]
             | sSubstring:
                 .tSubstring
-                oTypeStkPop
-                oTypeStkPop
-                oTypeStkPop
-                oSymbolStkPop
-                oSymbolStkPop
                 oTypeStkPush(tpChar)
+                oTypeStkSwap
+                [ oTypeStkChooseKind
+                    | tpInteger:
+                    | *:
+                        #eIntegerExpnReqd
+                ]
+                oTypeStkPop
+                oTypeStkSwap
+                [ oTypeStkChooseKind
+                    | tpInteger:
+                    | *:
+                        #eIntegerExpnReqd
+                ]
+                oTypeStkPop
+                @CompareAndSwapTypes
+                oTypeStkPop
+                oSymbolStkPop
+                oSymbolStkPop
                 oSymbolStkSetKind(syExpression)
             | sGT:
                 .tGT
