@@ -1637,6 +1637,7 @@ OperandSubstringPopPop:
 OperandRepeatStringPop:
     @SaveTempRegsToStack
     @OperandForcetoStack
+    @OperandPopAndFreeTemp
 
     @OperandForceAddressIntoTemp
     @OperandForcetoStack
@@ -2890,7 +2891,8 @@ OperandChr:
 OperandOrd:
     % Byte operand is on top of operand stack
     % Fill a register with integer zero
-    @OperandForceAddressIntoTemp       
+    @OperandForceAddressIntoTemp   
+    @OperandPopAndFreeTemp    
     oOperandPushMode(mTempIndirect)
     oOperandSetValue(zero)
     oOperandSetLength(byte)
